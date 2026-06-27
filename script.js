@@ -1,6 +1,6 @@
 let count = 0;
 const maxCount = 5; 
-let isCoolDown = false; // 입을 계속 벌리고 있을 때 무한 인정되는 걸 방지하는 안전장치
+let isCoolDown = false; 
 
 const eatBtn = document.getElementById('eat-btn');
 const poliChar = document.getElementById('poli-character');
@@ -11,7 +11,7 @@ const webcamElement = document.getElementById('webcam');
 const loadingMsg = document.getElementById('loading-msg');
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function playBeep(freq, duration) {
+function playSound(freq, duration) {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.connect(gain);
@@ -23,59 +23,66 @@ function playBeep(freq, duration) {
     osc.stop(audioCtx.currentTime + duration);
 }
 
-// 냠냠 성공 액션
-function triggerEat() {
+// 아이가 입을 벌리면 폴리도 같이 반응하는 로직
+function startEatingSequence() {
     if (count >= maxCount || isCoolDown) return;
+    isCoolDown = true;
 
-    isCoolDown = true; // 쿨타임 작동 (아이가 우물우물 씹는 동안은 인식 멈춤)
-    count++;
-    eatCountText.innerText = count;
-    
-    const progress = (count / maxCount) * 100;
-    energyBar.style.width = `${progress}%`;
+    // [1단계] 동기화: 폴리도 같이 입을 벌림!
+    poliChar.innerText = "😮"; // 입 벌린 폴리 대용 이모지
+    poliChar.className = "poli-avatar poli-open";
+    poliMsg.innerText = "아~! 폴리도 같이 아~~!!";
+    playSound(440, 0.1);
 
-    poliChar.innerText = "😋"; 
-    poliChar.classList.add('poli-eating');
-    poliMsg.innerText = "와구와구! 구조대원 진짜 최고다! 대단해!";
-    playBeep(600, 0.3); 
-
+    // 0.8초 뒤 [2단계] 우물우물 먹기 시작
     setTimeout(() => {
-        poliChar.classList.remove('poli-eating');
-        if (count < maxCount) {
-            poliChar.innerText = "🚓";
-            poliMsg.innerText = "에너지가 더 필요해! 한 입 더 아~ 해볼까?";
-            // 4초 뒤에 다음 입열기 인식을 허용합니다. (아이 식사 속도에 맞게 조절 가능)
-            setTimeout(() => { isCoolDown = false; }, 4000); 
-        } else {
-            poliChar.innerText = "👑";
-            poliMsg.innerText = "⚡ 완밥 성공! 에너지가 가득 찼어! 출동!! ⚡";
-            playBeep(800, 0.5);
-            eatBtn.innerText = "🎉 미션 완료! 다 먹었어요! 🎉";
-            eatBtn.style.backgroundColor = "#4caf50";
-        }
-    }, 2000);
+        count++;
+        eatCountText.innerText = count;
+        energyBar.style.width = `${(count / maxCount) * 100}%`;
+
+        poliChar.innerText = "😋"; // 냠냠 이모지
+        poliChar.className = "poli-avatar poli-chew";
+        poliMsg.innerText = "와구와구! 냠냠! 너무 맛있다!";
+        playSound(600, 0.4);
+
+        // 2.5초 동안 맛있게 먹은 후 [3단계] 대기 또는 엔딩
+        setTimeout(() => {
+            poliChar.className = "poli-avatar"; // 애니메이션 제거
+            
+            if (count < maxCount) {
+                poliChar.innerText = " Louie ( Patrol Car ) 🚓"; 
+                poliChar.innerText = "🚓"; // 평소 폴리로 복귀
+                poliMsg.innerText = "다음 한 입도 같이 먹자, 대원!";
+                
+                // 아이가 음식을 완전히 씹고 삼킬 시간을 주기 위해 4초 쿨타임 후 다음 인식 허용
+                setTimeout(() => { isCoolDown = false; }, 4000);
+            } else {
+                // 완밥 성공!
+                poliChar.innerText = "👑";
+                poliMsg.innerText = "⚡ 완밥 미션 성공! 출동 준비 끝! ⚡";
+                playSound(800, 0.6);
+            }
+        }, 2500);
+
+    }, 800);
 }
 
-// 버튼 누르는 수동 작동도 유지
-eatBtn.addEventListener('click', triggerEat);
+eatBtn.addEventListener('click', startEatingSequence);
 
-// --- AI 입벌림 감지 엔진 ---
+// --- AI 실시간 입 벌림 체크 로직 ---
 function onResults(results) {
     if (loadingMsg) loadingMsg.style.display = "none";
     
     if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
         const landmarks = results.multiFaceLandmarks[0];
         
-        // 13번(윗입술 안쪽), 14번(아랫입술 안쪽) 좌표 획득
         const topLip = landmarks[13];
         const bottomLip = landmarks[14];
-        
-        // 두 입술의 Y축 거리 계산
         const mouthDistance = Math.abs(topLip.y - bottomLip.y);
         
-        // 거리가 0.045보다 크면 입을 벌린 것으로 판단 (스마트폰과의 거리에 따라 미세조정 필요)
-        if (mouthDistance > 0.045 && !isCoolDown) {
-            triggerEat();
+        // 아이가 입을 크게 벌렸을 때 (쿨다운 상태가 아닐 때만)
+        if (mouthDistance > 0.048 && !isCoolDown) {
+            startEatingSequence();
         }
     }
 }
@@ -83,7 +90,6 @@ function onResults(results) {
 const faceMesh = new FaceMesh({
     locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
 });
-
 faceMesh.setOptions({
     maxNumFaces: 1,
     refineLandmarks: true,
@@ -93,14 +99,10 @@ faceMesh.setOptions({
 faceMesh.onResults(onResults);
 
 const camera = new Camera(webcamElement, {
-    onFrame: async () => {
-        await faceMesh.send({ image: webcamElement });
-    },
-    width: 320,
-    height: 320
+    onFrame: async () => { await faceMesh.send({ image: webcamElement }); },
+    width: 640,
+    height: 480
 });
-
 camera.start().catch(err => {
-    if (loadingMsg) loadingMsg.innerText = "카메라 권한을 승인해주세요! 🙏";
-    console.error(err);
+    if (loadingMsg) loadingMsg.innerText = "카메라 권한을 허용해주세요! 🙏";
 });
