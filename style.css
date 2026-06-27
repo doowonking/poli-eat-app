@@ -1,59 +1,85 @@
-/* 모바일 화면 맞춤 기초 디자인 */
 body {
     margin: 0;
     padding: 0;
-    background-color: #e3f2fd; /* 폴리 느낌의 하늘색 배경 */
+    background-color: #e3f2fd;
     font-family: 'Malgun Gothic', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
 }
 
 .app-container {
     text-align: center;
     width: 90%;
     max-width: 400px;
+    padding: 20px 0;
 }
 
 .title {
     color: #0d47a1;
-    font-size: 24px;
-    margin-bottom: 20px;
+    font-size: 22px;
+    margin-bottom: 15px;
 }
 
-/* 폴리 캐릭터 박스 */
+/* 카메라를 아기자기한 거울 형태로 디자인 */
+.camera-box {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px auto;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid #0288d1;
+    background: #000;
+    box-shadow: 0px 6px 12px rgba(0,0,0,0.15);
+}
+
+#webcam {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1); /* 거울처럼 좌우 반전 시켜 자연스럽게 보이게 함 */
+}
+
+#loading-msg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 13px;
+    width: 80%;
+}
+
 .character-box {
     background: white;
     border-radius: 20px;
-    padding: 30px 10px;
-    box-shadow: 0px 8px 16px rgba(0,0,0,0.1);
-    margin-bottom: 25px;
+    padding: 25px 10px;
+    box-shadow: 0px 6px 12px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
 }
 
 #poli-character {
-    font-size: 80px; /* 임시 이모지 크기 */
+    font-size: 70px;
     transition: transform 0.2s;
 }
 
-/* 맛있게 먹을 때 들썩이는 애니메이션 효과 */
 .poli-eating {
     transform: scale(1.3) rotate(5deg);
 }
 
 #poli-message {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
     color: #333;
     margin-top: 15px;
 }
 
-/* 에너지 게이지 바 */
 .gauge-container {
     background-color: #ddd;
     border-radius: 15px;
-    height: 25px;
+    height: 20px;
     width: 100%;
     overflow: hidden;
     margin-bottom: 5px;
@@ -62,32 +88,25 @@ body {
 .energy-bar {
     background: linear-gradient(to right, #4caf50, #8bc34a);
     height: 100%;
-    width: 0%; /* 기본 0%에서 시작 */
+    width: 0%;
     transition: width 0.4s ease;
 }
 
 .gauge-text {
-    font-size: 16px;
+    font-size: 14px;
     color: #555;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
-/* 28개월 아이도 쉽게 누르는 거대 버튼 */
 .eat-button {
-    background-color: #ff9800;
+    background-color: #b0bec5;
     color: white;
     border: none;
     border-radius: 50px;
-    padding: 20px 40px;
-    font-size: 22px;
+    padding: 12px 25px;
+    font-size: 15px;
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0px 6px 0px #e65100;
-    width: 100%;
-    transition: all 0.1s;
-}
-
-.eat-button:active {
-    margin-top: 6px;
-    box-shadow: 0px 0px 0px #e65100;
+    box-shadow: 0px 4px 0px #78909c;
+    width: 90%;
 }
