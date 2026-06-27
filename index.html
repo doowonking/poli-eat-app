@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>폴리와 함께 냠냠!</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 상단 타이틀 -->
+        <h1 class="title">폴리 에너지 충전소 ⚡</h1>
+        
+        <!-- 폴리 캐릭터 영역 -->
+        <div class="character-box">
+            <div id="poli-character" class="poli-idle">🚓</div>
+            <p id="poli-message">"구조대원! 준비되었나? 같이 먹자!"</p>
+        </div>
+
+        <!-- 에너지 충전 게이지 (완밥 유도) -->
+        <div class="gauge-container">
+            <div id="energy-bar" class="energy-bar"></div>
+        </div>
+        <p class="gauge-text"><span id="eat-count">0</span> / 5번 충전됨</p>
+
+        <!-- 아이가 누르는 거대 버튼 -->
+        <button id="eat-btn" class="eat-button">
+            🍚 내가 한 입 먹었어요!
+        </button>
+    </div>
+
+    <script href="script.js"></script>
+</body>
+</html>
