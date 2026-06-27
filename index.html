@@ -3,35 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>폴리와 함께 냠냠!</title>
+    <title>폴리와 함께 냠냠 AR</title>
     <link rel="stylesheet" href="style.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <div class="app-container">
-        <h1 class="title">폴리 AI 에너지 충전소 ⚡</h1>
+    <video id="webcam" autoplay muted playsinline></video>
+    <div id="loading-msg">AI 구조대 출동 준비 중... 🤖</div>
+
+    <div class="ar-overlay">
         
-        <div class="camera-box">
-            <video id="webcam" autoplay muted playsinline></video>
-            <div id="loading-msg">AI 카메라 켜는 중... 🤖</div>
+        <div class="top-info">
+            <div class="gauge-container">
+                <div id="energy-bar" class="energy-bar"></div>
+            </div>
+            <p class="gauge-text">폴리 에너지 충전: <span id="eat-count">0</span> / 5</p>
         </div>
         
-        <div class="character-box">
-            <div id="poli-character" class="poli-idle">🚓</div>
-            <p id="poli-message">"카메라를 보며 입을 크게 벌려봐!"</p>
+        <div id="msg-box" class="msg-box">
+            <p id="poli-message">"구조대원! 같이 아~ 해보자!"</p>
         </div>
 
-        <div class="gauge-container">
-            <div id="energy-bar" class="energy-bar"></div>
+        <div class="character-container">
+            <div id="poli-character" class="poli-avatar">🚓</div>
         </div>
-        <p class="gauge-text"><span id="eat-count">0</span> / 5번 충전됨</p>
 
-        <button id="eat-btn" class="eat-button">
-            🍚 안 될 때는 수동으로 한 입 먹이기
-        </button>
     </div>
+
+    <button id="eat-btn" class="manual-btn">수동 충전</button>
 
     <script src="script.js"></script>
 </body>
