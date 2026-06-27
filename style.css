@@ -1,112 +1,146 @@
-body {
+/* 전체 화면 초기화 */
+* {
+    box-sizing: border-box;
+}
+body, html {
     margin: 0;
     padding: 0;
-    background-color: #e3f2fd;
-    font-family: 'Malgun Gothic', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
-
-.app-container {
-    text-align: center;
-    width: 90%;
-    max-width: 400px;
-    padding: 20px 0;
-}
-
-.title {
-    color: #0d47a1;
-    font-size: 22px;
-    margin-bottom: 15px;
-}
-
-/* 카메라를 아기자기한 거울 형태로 디자인 */
-.camera-box {
-    position: relative;
-    width: 150px;
-    height: 150px;
-    margin: 0 auto 20px auto;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 5px solid #0288d1;
-    background: #000;
-    box-shadow: 0px 6px 12px rgba(0,0,0,0.15);
-}
-
-#webcam {
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    background-color: #000;
+    font-family: 'Malgun Gothic', sans-serif;
+}
+
+/* 1. 카메라를 배경으로 꽉 채우기 (AR 핵심) */
+#webcam {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     object-fit: cover;
-    transform: scaleX(-1); /* 거울처럼 좌우 반전 시켜 자연스럽게 보이게 함 */
+    z-index: 1;
+    transform: scaleX(-1); /* 거울 모드 */
 }
 
 #loading-msg {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
-    font-size: 13px;
-    width: 80%;
-}
-
-.character-box {
-    background: white;
+    font-size: 18px;
+    z-index: 2;
+    background: rgba(0,0,0,0.6);
+    padding: 10px 20px;
     border-radius: 20px;
-    padding: 25px 10px;
-    box-shadow: 0px 6px 12px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
 }
 
-#poli-character {
-    font-size: 70px;
-    transition: transform 0.2s;
+/* 2. 카메라 위에 가상으로 얹어지는 UI 레이어 */
+.ar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    pointer-events: none; /* 터치가 카메라나 버튼에 방해 안 되게 함 */
+    padding: 20px;
 }
 
-.poli-eating {
-    transform: scale(1.3) rotate(5deg);
-}
-
-#poli-message {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-    margin-top: 15px;
+/* 상단 게이지 바 */
+.top-info {
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 12px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    pointer-events: auto;
 }
 
 .gauge-container {
     background-color: #ddd;
-    border-radius: 15px;
-    height: 20px;
-    width: 100%;
+    border-radius: 10px;
+    height: 15px;
     overflow: hidden;
-    margin-bottom: 5px;
 }
 
 .energy-bar {
-    background: linear-gradient(to right, #4caf50, #8bc34a);
+    background: linear-gradient(to right, #00c853, #b2ff59);
     height: 100%;
     width: 0%;
-    transition: width 0.4s ease;
+    transition: width 0.3s ease;
 }
 
 .gauge-text {
+    margin: 5px 0 0 0;
     font-size: 14px;
-    color: #555;
-    margin-bottom: 25px;
+    font-weight: bold;
+    color: #0d47a1;
+    text-align: center;
 }
 
-.eat-button {
-    background-color: #b0bec5;
+/* 중앙 말풍선 */
+.msg-box {
+    background: rgba(13, 71, 161, 0.85);
     color: white;
-    border: none;
-    border-radius: 50px;
-    padding: 12px 25px;
-    font-size: 15px;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 18px;
     font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0px 4px 0px #78909c;
-    width: 90%;
+    text-align: center;
+    max-width: 280px;
+    margin: 0 auto;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transform: translateY(-20px);
+}
+
+/* 3. 하단 폴리 AR 캐릭터 영역 (화면 하단에 배치) */
+.character-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.poli-avatar {
+    font-size: 100px; /* 이모지 크기 (나중에 PNG 이미지로 바꾸면 크기 자동 조절) */
+    filter: drop-shadow(0px 6px 8px rgba(0,0,0,0.3));
+    transition: all 0.2s ease;
+    transform: scale(1);
+}
+
+/* 폴리가 입 벌릴 때 (아이가 입 벌릴 때 동기화) */
+.poli-open {
+    transform: scale(1.2);
+}
+
+/* 폴리가 먹을 때 우물우물 들썩이는 효과 */
+.poli-chew {
+    animation: chewAnim 0.3s infinite alternate;
+}
+
+@keyframes chewAnim {
+    0% { transform: scale(1.1) translateY(0); }
+    100% { transform: scale(1.1) translateY(-15px) rotate(3deg); }
+}
+
+/* 백업용 수동 버튼 */
+.manual-btn {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    z-index: 4;
+    background: rgba(0,0,0,0.4);
+    color: #ccc;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 11px;
 }
