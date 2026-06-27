@@ -101,17 +101,23 @@ body, html {
     transform: translateY(-20px);
 }
 
-/* 3. 하단 폴리 AR 캐릭터 영역 (화면 하단에 배치) */
+/* 3. 하단 폴리 AR 캐릭터 영역 (잘림 방지 및 크기 조절 반영) */
 .character-container {
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: flex-end; /* 폴리가 바닥에 안정적으로 앉아있도록 설정 */
     margin-bottom: 40px;
+    height: 180px; /* 폴리가 움직일 수 있는 충분한 세로 공간 확보 */
 }
 
 .poli-avatar {
-    font-size: 100px; /* 이모지 크기 (나중에 PNG 이미지로 바꾸면 크기 자동 조절) */
-    filter: drop-shadow(0px 6px 8px rgba(0,0,0,0.3));
+    width: auto;
+    height: 100%; /* 컨테이너 높이에 꽉 차게 */
+    max-width: 180px; /* 💡 화면 양옆으로 잘리는 것을 방지 */
+    max-height: 180px;
+    object-fit: contain; /* 💡 중요: 사진 비율을 유지하며 깨지거나 잘리지 않게 함 */
+    filter: drop-shadow(0px 6px 8px rgba(0,0,0,0.3)); /* 폴리 뒤에 부드러운 그림자 효과 */
     transition: all 0.2s ease;
     transform: scale(1);
 }
